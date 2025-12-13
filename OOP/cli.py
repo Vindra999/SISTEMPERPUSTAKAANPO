@@ -13,14 +13,14 @@ class CLI:
     def run(self):
         while True:
             clear_screen()
-            print("=== Sistem Perpustakaan (SOLID) ===")
+            print("=== Sistem Perpustakaan ===")
             print("1. Lihat semua buku")
             print("2. Lihat buku tersedia")
             print("3. Cari buku")
             print("4. Registrasi")
             print("5. Login Pengunjung")
             print("6. Login Admin")
-            print("7. Setel/Buat Admin (Perbaikan)")
+            print("7. Pengaturan Admin")
             print("8. Keluar")
             c = input("Pilih menu: ").strip()
             try:
@@ -128,7 +128,7 @@ class CLI:
 
     def ui_fix_admin(self):
         clear_screen()
-        print("=== Setel/Buat Admin (Perbaikan) ===")
+        print("=== Pengaturan Admin ===")
         u = input("Username admin: ").strip() or "admin"
         p1 = input("Password baru: ")
         p2 = input("Ulangi password baru: ")

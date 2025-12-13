@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
         if "--fix-admin" in sys.argv:
             clear_screen()
-            print("=== Perbaiki / Setel Admin ===")
+            print("=== Pengaturan admin ===")
             username = input("Username admin yang ingin disetel: ").strip() or "admin"
             pwd1 = input("Password baru: ")
             pwd2 = input("Ulangi password baru: ")
