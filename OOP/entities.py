@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+
 class User:
     def __init__(self, id: int, username: str, role: str):
         self.id = id
@@ -9,7 +12,7 @@ class User:
 
 
 class Book:
-    def __init__(self, id: int, title: str, author: str, year: int, total: int, available: int):
+    def __init__(self, id, title, author, year, total, available):
         self.id = id
         self.title = title
         self.author = author
@@ -17,12 +20,19 @@ class Book:
         self.total = total
         self.available = available
 
+    def can_be_borrowed(self) -> bool:
+        return self.available > 0
+
 
 class Loan:
-    def __init__(self, id: int, user_id: int, book_id: int, loan_date: str, due_date: str, return_date: str | None):
-        self.id = id
-        self.user_id = user_id
-        self.book_id = book_id
-        self.loan_date = loan_date
-        self.due_date = due_date
-        self.return_date = return_date
+    LOAN_DAYS = 7
+
+    @staticmethod
+    def create(user_id: int, book_id: int) -> dict:
+        now = datetime.utcnow()
+        return {
+            "user_id": user_id,
+            "book_id": book_id,
+            "loan_date": now.isoformat(),
+            "due_date": (now + timedelta(days=Loan.LOAN_DAYS)).isoformat(),
+        }

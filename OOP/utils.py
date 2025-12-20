@@ -1,26 +1,39 @@
-import hashlib
-import binascii
 import os
+import hashlib
+import hmac
+import binascii
+
 
 class PasswordHasher:
-    def hash(self, password: str) -> str:
-        salt = hashlib.sha256(os.urandom(60)).hexdigest().encode("ascii")
-        pwdhash = hashlib.pbkdf2_hmac("sha512", password.encode("utf-8"), salt, 100000)
-        return (salt + binascii.hexlify(pwdhash)).decode("ascii")
+    """Simple, safer password hasher using PBKDF2-HMAC-SHA256 with per-password salt.
 
-    def verify(self, stored: str, provided: str) -> bool:
-        salt = stored[:64]
-        stored_hash = stored[64:]
-        pwdhash = hashlib.pbkdf2_hmac(
-            "sha512", provided.encode("utf-8"), salt.encode("ascii"), 100000
+    Stored format: <salt_hex>$<hash_hex>
+    """
+
+    ITERATIONS = 100_000
+    SALT_SIZE = 16
+
+    def hash(self, password: str) -> str:
+        salt = hashlib.sha256(os.urandom(self.SALT_SIZE)).digest()[: self.SALT_SIZE]
+        dk = hashlib.pbkdf2_hmac(
+            "sha256", password.encode(), salt, self.ITERATIONS
         )
-        return binascii.hexlify(pwdhash).decode("ascii") == stored_hash
+        return f"{binascii.hexlify(salt).decode()}${binascii.hexlify(dk).decode()}"
+
+    def verify(self, hashed: str, password: str) -> bool:
+        try:
+            salt_hex, hash_hex = hashed.split("$", 1)
+        except ValueError:
+            return False
+        salt = binascii.unhexlify(salt_hex)
+        expected = binascii.unhexlify(hash_hex)
+        dk = hashlib.pbkdf2_hmac("sha256", password.encode(), salt, self.ITERATIONS)
+        return hmac.compare_digest(dk, expected)
+
 
 def clear_screen():
     os.system("cls" if os.name == "nt" else "clear")
 
-def pause(msg="Tekan Enter untuk lanjut..."):
-    try:
-        input(msg)
-    except EOFError:
-        pass
+
+def pause(msg="Tekan Enter untuk melanjutkan..."):
+    input(msg)
